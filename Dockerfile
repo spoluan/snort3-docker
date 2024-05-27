@@ -56,17 +56,17 @@ RUN git clone https://github.com/snort3/libdaq.git --progress --verbose /tmp/lib
     cd /tmp/libdaq && \
     git checkout ${DAQ_VERSION} && \
     ./bootstrap && \
-    ./configure --prefix=/usr/local/lib/daq_s3/ && \
+    ./configure --prefix=/usr/local/ && \
     make && \
     make install 
 
 # Find the libdaq.pc file for verification and set PKG_CONFIG_PATH & LD_LIBRARY_PATH
 RUN find /usr/local -name libdaq.pc && \
-    echo 'export PKG_CONFIG_PATH=/usr/local/lib/daq_s3/lib/pkgconfig:$PKG_CONFIG_PATH' >> /etc/profile.d/pkg_config_path.sh && \
-    echo 'export LD_LIBRARY_PATH=/usr/local/lib/daq_s3/lib:$LD_LIBRARY_PATH' >> /etc/profile.d/pkg_config_path.sh
+    echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH' >> /etc/profile.d/pkg_config_path.sh && \
+    echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> /etc/profile.d/pkg_config_path.sh
     
-# Make sure the profile script is sourced for interactive and non-interactive shells
-RUN echo 'source /etc/profile.d/pkg_config_path.sh' >> /etc/.bashrc
+# Make sure the profile script is sourced
+RUN . ./etc/profile.d/pkg_config_path.sh >> /etc/.bashrc 
  
 # Install Google's thread-caching malloc, Tcmalloc, a memory allocator tuned for high concurrency conditions
 RUN wget -P /tmp/ https://github.com/gperftools/gperftools/releases/download/gperftools-2.9.1/gperftools-2.9.1.tar.gz && \
@@ -77,12 +77,12 @@ RUN wget -P /tmp/ https://github.com/gperftools/gperftools/releases/download/gpe
     make install
  
 # Download and install snort3 from source code
-ENV SNORT_VERSION "3.2.1.0"
-RUN git clone https://github.com/snort3/snort3.git --progress --verbose /tmp/snort3 && \
+ENV SNORT_VERSION "3.2.1.0"  
+RUN . ./etc/profile.d/pkg_config_path.sh && \
+    pkg-config --modversion libdaq && \
+    git clone https://github.com/snort3/snort3.git --progress --verbose /tmp/snort3 && \
     cd /tmp/snort3 && \
     git checkout ${SNORT_VERSION}  && \
-    source /etc/profile.d/pkg_config_path.sh && \
-    pkg-config --modversion libdaq && \
     ./configure_cmake.sh --prefix=/usr/local \ 
         --enable-tcmalloc && \ 
     cd /tmp/snort3/build && \
@@ -93,12 +93,13 @@ RUN git clone https://github.com/snort3/snort3.git --progress --verbose /tmp/sno
 
 # Configure the run-time bindings and validate installation
 RUN ldconfig && \
-    source /etc/profile.d/pkg_config_path.sh && \
+    . ./etc/profile.d/pkg_config_path.sh && \
     snort -c /usr/local/etc/snort/snort.lua
  
 RUN mkdir /usr/local/etc/rules && \
     mkdir /usr/local/etc/so_rules/ && \
     mkdir /usr/local/etc/lists/ && \
+    mkdir /usr/local/etc/snort_custom/ && \ 
     touch /usr/local/etc/rules/local.rules && \
     touch /usr/local/etc/lists/default.blocklist && \
     mkdir /var/log/snort/
@@ -113,4 +114,4 @@ RUN apt-get clean && \
         /var/tmp/* 
   
 # Run snort   
-# ENTRYPOINT ["/opt/entrypoint.sh"]  
+ENTRYPOINT ["/opt/entrypoint.sh"]  
