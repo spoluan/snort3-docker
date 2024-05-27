@@ -1,0 +1,1 @@
+alert icmp any any -> $HOME_NET any (msg:"Someone ping you!"; sid:10000001; rev:1; classtype:icmp-event;)
