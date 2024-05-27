@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  snort3:
+    labels:
+      - maintainer=Sevendi Eldrige Rifki Poluan <sevendipoluan@gmail.com>
+    build:
+      context: .
+    image: snort3:latest
+    container_name: snort3
+    restart: unless-stopped
+    tty: true
+    deploy:
+      replicas: 1 
+    volumes:
+      - ${PWD}/rules:/usr/local/etc/rules
+      - ${PWD}/so_rules/:/usr/local/etc/so_rules/
+      - ${PWD}/lists:/usr/local/etc/lists/
+      - ${PWD}/log/:/var/log/snort/
+      - ${PWD}/snort/:/usr/local/etc000/snort_custom/
+    environment:
+      - LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
+      - PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+    network_mode: "host"
+    privileged: true 
