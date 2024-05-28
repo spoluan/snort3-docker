@@ -13,7 +13,7 @@
 -- 5. configure detection
 -- 6. configure filters
 -- 7. configure outputs
--- 8. configure tweaks
+-- 8. configure tweaksf
 
 ---------------------------------------------------------------------------
 -- 1. configure defaults
@@ -21,11 +21,11 @@
 
 -- HOME_NET and EXTERNAL_NET must be set now
 -- setup the network addresses you are protecting
-HOME_NET = 'any'
+HOME_NET = '192.168.7.0/24'
 
 -- set up the external network addresses.
 -- (leave as "any" in most situations)
-EXTERNAL_NET = 'any'
+EXTERNAL_NET = '!HOME_NET'
 
 include 'snort_defaults.lua'
 
@@ -250,7 +250,7 @@ rate_filter =
 -- you can enable with defaults from the command line with -A <alert_type>
 -- uncomment below to set non-default configs
 --alert_csv = { }
---alert_fast = { }
+-- alert_fast = { }
 --alert_full = { }
 --alert_sfsocket = { }
 --alert_syslog = { }
