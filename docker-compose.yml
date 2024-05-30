@@ -19,7 +19,7 @@ services:
       - ${PWD}/log/:/var/log/snort/
       - ${PWD}/snort/:/usr/local/etc000/snort_custom/
     environment:
-      - LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
-      - PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+      - LD_LIBRARY_PATH=/usr/local/lib/
+      - PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
     network_mode: "host"
     privileged: true 
